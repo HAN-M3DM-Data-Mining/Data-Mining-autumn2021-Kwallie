@@ -39,9 +39,3 @@ cm <- confusionMatrix(cleanDF_test_pred, testDF_labels[[1]], positive = NULL, dn
 
 fourfoldplot(cm$table, color = c("#d62643", "#3e9e76"),
              conf.level = 0, margin = 1, main = "Confusion Matrix")
-
-# An accuracy of 98% is very high and as such I think the model performs well. However, in the case of healthcare and in particular cancer, I don't think you can diagnose with a model.
-
-# High false positives are more costly then false negatives. If a person is misdiagnosed with cancer, they have to undergo a lengthy process which costs a lot, mentally and financially. 
-# Also, after they find out they have been misdiagnosed with cancer they can sue everyone involved. 
-# To be fair, the family of a patient which died of a false negative can also sue, but they don't have the massive medical bills.
