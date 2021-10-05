@@ -1,0 +1,132 @@
+---
+title: "Assigment - kNN DIY"
+author:
+  - Chantal Lenz
+  - Niels Eenink
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+   html_notebook:
+    toc: true
+    toc_depth: 2
+---
+
+
+```{r}
+library(tidyverse)
+library(googlesheets4)
+library(class)
+library(caret)
+library(forcats)
+```
+
+---
+
+## Business Understanding
+I have chosen the data set on HCV. This measures different values for blood donors and people with Hepatitis C.
+Hepatitis C is an infectious disease which causes liver damage. Seeing as Hepatitis C is primarily asymptomatic and transferable by blood, it is important to make sure that blood donors do not carry the virus.
+As such, it is very important to screen blood donors. 
+
+## Data Understanding
+```{r}
+path <- "KNN-hcvdat0.csv"
+rawDF <- read_csv(path)
+
+str(rawDF) # See first couple of rows
+head(rawDF) # See columns and meta data (14 cols, 615 rows)
+
+(cntCat <- table(rawDF$Category))
+(percCat <- round(prop.table(cntCat) * 100, digits=1))
+```
+
+## Data Preparation
+```{r}
+normalize <- function(x) {
+    return  ((x - min(x)) / (max(x) - min(x)))
+} # Create normalize function
+
+cleanDF <- rawDF[-1] # Get rid of the Patient ID
+```
+
+Now, we have a problem. The dataset is so ordered, that the first 515 rows only contain Blood Donors.
+Only in the last 100 rows there are Suspect Blood Donors and the various Hepatitis diseases. Therefore, we have to randomly order the data, so we have all categories represented in the training model.
+
+```{r}
+set.seed(15) # Set the seed for randomness
+
+cleanDF_random <- cleanDF[sample(1:nrow(cleanDF)), ] # Select all rows randomly
+```
+
+There is also another problem. Some of the values in the dataset are NA and the normalize function can't cope with that, so we have to remove them.
+Here, there are two options:
+
+1. We can omit the rows which have NA's in them.
+
+2. We can replace the NA's with the mean of their column.
+
+After consideration, I have decided to go with the first option, seeing as this effects the integrity of the data set the least.
+
+```{r}
+cleanDF_random <- na.omit(cleanDF_random) # Delete the rows with NA values
+
+print(nrow(cleanDF_random)) # get the new number of rows
+```
+
+We want to assign the different categories, one of three labels:
+
+Blood Donor             | 0=Blood Donor
+
+Suspected Blood Donor   | 0s=suspect Blood Donor
+
+Hepatits                | 1=Hepatits    2=Fibrosis  3=Cirrhosis
+
+
+```{r}
+cleanDF_random$Category <- fct_collapse(cleanDF_random$Category, Blood_Donor = "0=Blood Donor", Hepatitis = "0s=suspect Blood Donor", Suspected_Blood_Donor = c("1=Hepatitis", "2=Fibrosis", "3=Cirrhosis"))
+unique(cleanDF_random$Category) # get the unique Labels
+```
+
+```{r}
+nCols <- dim(cleanDF_random)[2] # Get the number of columns in the dataset
+```
+
+We know that the 1st and 3rd columns of the dataset are strings, which can't be normalized. Therefore, we only want to normalize the columns that are not 1st or 3rd.
+
+```{r}
+cleanDF_n <- sapply(4:nCols,
+                    function(x) {
+                        normalize(cleanDF_random[,x])
+}) %>% as.data.frame()
+# Seeing as the first 3 columns are: Category, Age, Sex. I have chosen not to normalize these, as such we start at the 4th column with the normalization.
+```
+
+As we know, there are 589 rows. The final 100 will be used for testing, the first 489 will be used for training.
+
+```{r}
+# Data/Numbers
+trainDF_feat <- cleanDF_n[1:489,  ]
+testDF_feat <- cleanDF_n[490:589,  ] 
+
+# Labels
+trainDF_labels <- cleanDF_random[1:489,  1]
+testDF_labels <- cleanDF_random[490:589,  1]
+```
+
+With this, the data prep is done.
+
+## Modeling
+```{r}
+cleanDF_test_pred <- knn(train = as.matrix(trainDF_feat), test = as.matrix(testDF_feat), cl = as.matrix(trainDF_labels), k = 21)
+head(cleanDF_test_pred)
+```
+As we can see, the model knows all three levels, and as such is trained on these three.
+
+## Evaluation and Deployment
+```{r}
+confusionMatrix(cleanDF_test_pred, testDF_labels[[1]], positive = NULL, dnn = c("Prediction", "True"))
+```
+
+reviewer adds suggestions for improving the model
+
+## False positive vs. False negative
+In this case, I believe false negatives are more costly. People which carry the disease can donate blood, which healthy people get, thereby spreading the disease further.
+Seeing as Hepatitis C can be asymptomatic/dormant for a while, patients with false positives can get more tests done when they get their false positives.

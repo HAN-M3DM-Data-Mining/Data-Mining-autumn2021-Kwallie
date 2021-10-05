@@ -1,0 +1,211 @@
+---
+title: "Assigment - Naive Bayes DIY"
+author:
+  - Niels Eenink - Author
+  - Chantal Lenz - Reviewer
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+   html_notebook:
+    toc: true
+    toc_depth: 2
+---
+
+```{r}
+#install.packages("tidyverse")
+#install.packages("tm")
+#install.packages("caret")
+#install.packages("wordcloud")
+#install.packages("e1071")
+
+library(tidyverse)
+library(tm)
+library(caret)
+library(wordcloud)
+library(e1071)
+```
+---
+
+Choose a suitable dataset from [this](https://github.com/HAN-M3DM-Data-Mining/assignments/tree/master/datasets) folder and train your own Naive Bayes model. Follow all the steps from the CRISP-DM model.
+
+
+## Business Understanding
+There are a lot of organisations in the world which publish news articles. Some of those organisations publish so called "fake news".
+To help filter out the fake from the non-fake news a classifier called naive bayes helps determine reliable and unreliable sources.
+
+## Data Understanding
+We received a big/ bulky data set which contains a lot of information, such as: id, title, author, text and label.
+A lot of this data is not relevant to us in this case, so removing the non relevant will not only create a simpler and clearer data set, it will also make the processing of the data a lot faster.
+
+
+```{r}
+#First we load in the data.
+FN_data <- "./NB-fakenews.csv" # Two .. in the path
+fullDF <- read.csv(FN_data, encoding = "UTF-8")
+
+#After the data is loaded, we can remove the unwanted columns. The dataframe with all the data is called "fullDF" (DF=DataFrame).
+#The following command makes a new dataframe without the columns we want to exclude (the "-" means we don't want the column in the new dataframe). Let's call this dataframe "cleanDF", because we "cleaned" it by removing the unwanted/unused data.
+cleanDF <- fullDF[c(-1, -3, -4)] %>%
+  na.omit
+head(cleanDF)
+```
+
+So now we that we decreased the size of the dataframe by three variables we can look into the information we have to analyse.
+
+The first thing I noticed is the naming of the column that shows if the article is (un)reliable, "label".
+I would like a more explanatory name, like "reliability".
+```{r}
+#Change the column name from "label" to "reliability".
+colnames(cleanDF)[2] <- "reliability"
+
+```
+
+So now it says reliability with a bunch of zero's and one's...
+To make it a bit more understandable for the non coding savvy people among us, let's change this into "reliable" and "unreliable".
+```{r}
+#Change the data inside the column "reliability" from zero's and one's into "reliable" and "unreliable"
+cleanDF$reliability <- factor(cleanDF$reliability, levels = c("0", "1"), labels = c("reliable", "unreliable"))
+
+#Convert class type to factor
+cleanDF$reliability <- cleanDF$reliability %>% 
+  factor %>% 
+  relevel("reliable")
+class(cleanDF$reliability)
+
+#Switch title and reliability columns
+col_order <- c("reliability", "title")
+cleanDF <- cleanDF[, col_order]
+```
+
+Now that we have a clean data set with understandable data let's make a wordcloud.
+```{r}
+#First we have to split the data set into two, one has all the titles with where the column "reliability" is "reliable".
+reliable <- cleanDF %>% filter(reliability == "reliable")
+#And the other has all the titles where the column "reliability" is "unreliable".
+unreliable <- cleanDF %>% filter(reliability == "unreliable")
+
+#When making a wordcloud the word that occur the most will be biggest
+#Let's make the reliable wordcloud green (positive).
+wordcloud(reliable$title, min.freq = 2, max.words = 20, scale = c(6, 0.5), colors= c("green1","green2","green3"))
+#And the unreliable wordcloud red (negative).
+wordcloud(unreliable$title, min.freq = 2, max.words = 20, scale = c(6, 0.5), colors= c("red1","red2","red3"))
+```
+
+
+## Data Preparation
+The first step we need to take is creating a so called Corpus, which refers to a collection of text documents.
+```{r}
+#Convert text into Corpus
+fullCorpus <- Corpus(VectorSource(fullDF$title))
+inspect(fullCorpus[1:3])
+```
+
+Now that we have converted the text to Corpus we need to remove any capital letters, because R will see "Word" and "word" as different words, this is something we don't want. Numbers are also not wanted.
+```{r}
+#Convert all text into lowercase and remove numbers.
+cleanCorpus <- fullCorpus %>%
+  tm_map(tolower) %>% # tolower was toLower, removed capital L
+  tm_map(removeNumbers)
+```
+
+Because we want the program to run as fast as possible words like "and", "the", "or", etc. are removed from the data set.
+Note that this doesn't affect the outcome because reliable and unreliable sources use these so called stop words. We also remove any punctuation.
+```{r}
+#Note that the removeWords function needs an extra argument. This argument is left empty, but can contain a vector with the words you define as stop words.
+cleanCorpus <- cleanCorpus %>%
+  tm_map(removeWords, stopwords()) %>%
+  tm_map(removePunctuation)
+```
+
+By removing the stop words there are sometimes two spaces between words where the stop word used to be. This is called a whitespace and this is not wanted. So let's remove them.
+```{r}
+#Remove Whitespaces
+cleanCorpus <- cleanCorpus %>%
+    tm_map(stripWhitespace)
+```
+
+Let's see what we changed!
+```{r}
+#Compare fullCorpus with cleanCorpus
+tibble(Full = fullCorpus$content[1:3], Clean = cleanCorpus$content[1:3])
+```
+
+Now that we have clean titles we can convert the cleanCorpus dataframe into a matrix.
+By converting the cleanCorpus dataframe into a matrix each word will get its own column. Each row is a title and the cells of the matrix contains the wordcount.
+```{r}
+#Convert cleanCorpus dataframe into a DTM (DocumentTermMatrix).
+cleanDTM <- cleanCorpus %>% DocumentTermMatrix
+inspect(cleanDTM)
+```
+
+So now we have a matrix in which we can see how many times a word occurs in reliable and unreliable articles.
+You may think it's now time to start modeling, but there is still something we need to do.
+
+When a computer program makes a decision it does it by looking up past instances where the situation occurred, for example:
+When the word "California" occurs in a title, does this make the article reliable or not? What if it is in combination with "man"? For a program to make such decisions it needs to be trained. So it needs data in which humans already made the decisions if a article is reliable or not. Luckily for us, we happen to have exactly that!
+
+So let's split our data in two parts. Training- and test data. When giving a program only a small amount of data problems like false positive and false positive can occur, so let's make sure this doesn't happen.
+
+Let's split the data 80/20 (training/test).
+```{r}
+#Split the data set and divide the data randomly.
+set.seed(1234)
+trainIndex <- createDataPartition(cleanDF$reliability, p= .80, list = FALSE, times = 1)
+head(trainIndex)
+
+#Apply split indices to all the data sets
+trainDF <- cleanDF[trainIndex, ]
+testDF <- cleanDF[-trainIndex, ]
+trainCorpus <- cleanCorpus[trainIndex] # was [trainIndex, 0] removed ", 0"
+testCorpus <- cleanCorpus[-trainIndex] # was [-trainIndex, 0] removed ", 0"
+trainDTM <- cleanDTM[trainIndex, ]
+testDTM <- cleanDTM[-trainIndex, ]
+```
+
+To make our program a little bit faster, let's eliminate the words that occur only five times or less
+```{r}
+#Search which words occur five times or less
+frequentWords <- trainDTM %>%
+  findFreqTerms(5)
+#remove the words that occur five times or less
+trainDTM <- DocumentTermMatrix(trainCorpus, list(dictionary = frequentWords))
+testDTM <- DocumentTermMatrix(testCorpus, list(dictionary = frequentWords))
+```
+
+Now that we have decreased our data set in size we need to make it understandable for the Naive Bayes classifier.
+The NB classifier is typically trained on categorical features like "Yes","Good","No", etc. Let's convert our DTM's, which now are numerical matrixes with word counts, into a factor that indicates if a word occurs in a title or not.
+
+```{r}
+#This simple code checks if x is bigger then 0, if this is the case it returns a 1, otherwise a 0 (or, as defined, yes or no).
+conver_counts <- function(x) {
+  x <- ifelse(x > 0, 1, 0) %>%
+    factor(levels = c(0,1), labels = c("No", "Yes"))
+}
+
+nColsDTM <- dim(trainDTM)[2]  #KAN ER NIET HELEMAAL ACHTER KOMEN WAAR DIT VOOR IS?
+trainDTM <- apply(trainDTM, MARGIN = 2, conver_counts)
+testDTM <- apply(testDTM, MARGIN = 2, conver_counts)
+head(trainDTM[,1:10])
+```
+
+
+## Modeling
+
+Now that the data preparation is done we can start modeling, and it is very simple since we already did the difficult bit!
+```{r}
+#The following command uses our training data set and returns a trained model
+nbayesModel <- naiveBayes(trainDTM, trainDF$reliability, laplace = 1)
+```
+
+## Evaluation and Deployment
+
+Let's evaluate all the things we have done and check the outcome.
+```{r}
+#To generate a prediction using our model you can use the predict function. 
+predVec <- predict(nbayesModel, testDTM)
+
+#Now using the prediction we just generated we can analyse the performance of our data.
+confusionMatrix(predVec, testDF$reliability, positive = "unreliable", dnn = c("Prediction", "True")) # Changed Unreliable to unreliable.
+```
+
+
+Maybe don't alway add the install packages, after the first time it is run, the code becomes redundant.
