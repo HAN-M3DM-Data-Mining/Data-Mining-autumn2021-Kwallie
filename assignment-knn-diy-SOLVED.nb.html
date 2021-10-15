@@ -303,7 +303,7 @@ i Use `spec()` to retrieve the full column specification for this data.
 i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 <!-- rnb-message-end -->
 <!-- rnb-source-begin eyJkYXRhIjoiICBzdHIocmF3REYpICAgICMgU2VlIGNvbHVtbnMgYW5kIG1ldGEgZGF0YSAoMTQgY29scywgNjE1IHJvd3MpICAgICBCRVNDSFJJSlZJTkcgT01XSVNTRUxFTiJ9 -->
-<pre class="r"><code>  str(rawDF)    # See columns and meta data (14 cols, 615 rows)     BESCHRIJVING OMWISSELEN</code></pre>
+<pre class="r"><code>  str(rawDF)    # See columns and meta data (14 cols, 615 rows)     SWITCH DESCRIPTIONS</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-output-begin eyJkYXRhIjoic3BlY190YmxfZGYgWzYxNSB4IDE0XSAoUzM6IHNwZWNfdGJsX2RmL3RibF9kZi90YmwvZGF0YS5mcmFtZSlcbiAkIC4uLjEgICAgOiBudW0gWzE6NjE1XSAxIDIgMyA0IDUgNiA3IDggOSAxMCAuLi5cbiAkIENhdGVnb3J5OiBjaHIgWzE6NjE1XSBcIjA9Qmxvb2QgRG9ub3JcIiBcIjA9Qmxvb2QgRG9ub3JcIiBcIjA9Qmxvb2QgRG9ub3JcIiBcIjA9Qmxvb2QgRG9ub3JcIiAuLi5cbiAkIEFnZSAgICAgOiBudW0gWzE6NjE1XSAzMiAzMiAzMiAzMiAzMiAzMiAzMiAzMiAzMiAzMiAuLi5cbiAkIFNleCAgICAgOiBjaHIgWzE6NjE1XSBcIm1cIiBcIm1cIiBcIm1cIiBcIm1cIiAuLi5cbiAkIEFMQiAgICAgOiBudW0gWzE6NjE1XSAzOC41IDM4LjUgNDYuOSA0My4yIDM5LjIgNDEuNiA0Ni4zIDQyLjIgNTAuOSA0Mi40IC4uLlxuICQgQUxQICAgICA6IG51bSBbMTo2MTVdIDUyLjUgNzAuMyA3NC43IDUyIDc0LjEgNDMuMyA0MS4zIDQxLjkgNjUuNSA4Ni4zIC4uLlxuICQgQUxUICAgICA6IG51bSBbMTo2MTVdIDcuNyAxOCAzNi4yIDMwLjYgMzIuNiAxOC41IDE3LjUgMzUuOCAyMy4yIDIwLjMgLi4uXG4gJCBBU1QgICAgIDogbnVtIFsxOjYxNV0gMjIuMSAyNC43IDUyLjYgMjIuNiAyNC44IDE5LjcgMTcuOCAzMS4xIDIxLjIgMjAgLi4uXG4gJCBCSUwgICAgIDogbnVtIFsxOjYxNV0gNy41IDMuOSA2LjEgMTguOSA5LjYgMTIuMyA4LjUgMTYuMSA2LjkgMzUuMiAuLi5cbiAkIENIRSAgICAgOiBudW0gWzE6NjE1XSA2LjkzIDExLjE3IDguODQgNy4zMyA5LjE1IC4uLlxuICQgQ0hPTCAgICA6IG51bSBbMTo2MTVdIDMuMjMgNC44IDUuMiA0Ljc0IDQuMzIgNi4wNSA0Ljc5IDQuNiA0LjEgNC40NSAuLi5cbiAkIENSRUEgICAgOiBudW0gWzE6NjE1XSAxMDYgNzQgODYgODAgNzYgMTExIDcwIDEwOSA4MyA4MSAuLi5cbiAkIEdHVCAgICAgOiBudW0gWzE6NjE1XSAxMi4xIDE1LjYgMzMuMiAzMy44IDI5LjkgOTEgMTYuOSAyMS41IDEzLjcgMTUuOSAuLi5cbiAkIFBST1QgICAgOiBudW0gWzE6NjE1XSA2OSA3Ni41IDc5LjMgNzUuNyA2OC43IDc0IDc0LjUgNjcuMSA3MS4zIDY5LjkgLi4uXG4gLSBhdHRyKCosIFwic3BlY1wiKT1cbiAgLi4gY29scyhcbiAgLi4gICAuLi4xID0gY29sX2RvdWJsZSgpLFxuICAuLiAgIENhdGVnb3J5ID0gY29sX2NoYXJhY3RlcigpLFxuICAuLiAgIEFnZSA9IGNvbF9kb3VibGUoKSxcbiAgLi4gICBTZXggPSBjb2xfY2hhcmFjdGVyKCksXG4gIC4uICAgQUxCID0gY29sX2RvdWJsZSgpLFxuICAuLiAgIEFMUCA9IGNvbF9kb3VibGUoKSxcbiAgLi4gICBBTFQgPSBjb2xfZG91YmxlKCksXG4gIC4uICAgQVNUID0gY29sX2RvdWJsZSgpLFxuICAuLiAgIEJJTCA9IGNvbF9kb3VibGUoKSxcbiAgLi4gICBDSEUgPSBjb2xfZG91YmxlKCksXG4gIC4uICAgQ0hPTCA9IGNvbF9kb3VibGUoKSxcbiAgLi4gICBDUkVBID0gY29sX2RvdWJsZSgpLFxuICAuLiAgIEdHVCA9IGNvbF9kb3VibGUoKSxcbiAgLi4gICBQUk9UID0gY29sX2RvdWJsZSgpXG4gIC4uIClcbiAtIGF0dHIoKiwgXCJwcm9ibGVtc1wiKT08ZXh0ZXJuYWxwdHI+IFxuIn0= -->
 <pre><code>spec_tbl_df [615 x 14] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
@@ -341,7 +341,7 @@ i Specify the column types or set `show_col_types = FALSE` to quiet this message
  - attr(*, &quot;problems&quot;)=&lt;externalptr&gt; </code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-source-begin eyJkYXRhIjoiICBoZWFkKHJhd0RGKSAgICMgU2VlIGZpcnN0IGNvdXBsZSBvZiByb3dzICAgICAgICAgICAgICAgICAgICAgICAgICBSSUogMzkgRU4gNDAifQ== -->
-<pre class="r"><code>  head(rawDF)   # See first couple of rows                          RIJ 39 EN 40</code></pre>
+<pre class="r"><code>  head(rawDF)   # See first couple of rows                          ROW 39 AND 40</code></pre>
 <!-- rnb-source-end -->
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
@@ -415,7 +415,7 @@ print(nrow(cleanDF_random)) # get the new number of rows</code></pre>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-source-begin eyJkYXRhIjpbImNsZWFuREZfcmFuZG9tJENhdGVnb3J5IDwtIGZjdF9jb2xsYXBzZShjbGVhbkRGX3JhbmRvbSRDYXRlZ29yeSwgQmxvb2RfRG9ub3IgPSBcIjA9Qmxvb2QgRG9ub3JcIiwgU3VzcGVjdGVkX0Jsb29kX0Rvbm9yID0gXCIwcz1zdXNwZWN0IEJsb29kIERvbm9yXCIsIEhlcGF0aXRzID0gYyhcIjE9SGVwYXRpdGlzXCIsIFwiMj1GaWJyb3Npc1wiLCBcIjM9Q2lycmhvc2lzXCIpKSAjIyNcIlN1c3BlY3RfQmxvb2RfRG9ub3JcIiBPTURSQUFJRU4gTUVUIFwiSGVwYXRpdGlzXCIiLCJ1bmlxdWUoY2xlYW5ERl9yYW5kb20kQ2F0ZWdvcnkpICMgZ2V0IHRoZSB1bmlxdWUgTGFiZWxzIl19 -->
-<pre class="r"><code>cleanDF_random$Category &lt;- fct_collapse(cleanDF_random$Category, Blood_Donor = &quot;0=Blood Donor&quot;, Suspected_Blood_Donor = &quot;0s=suspect Blood Donor&quot;, Hepatits = c(&quot;1=Hepatitis&quot;, &quot;2=Fibrosis&quot;, &quot;3=Cirrhosis&quot;)) ###&quot;Suspect_Blood_Donor&quot; OMDRAAIEN MET &quot;Hepatitis&quot;
+<pre class="r"><code>cleanDF_random$Category &lt;- fct_collapse(cleanDF_random$Category, Blood_Donor = &quot;0=Blood Donor&quot;, Suspected_Blood_Donor = &quot;0s=suspect Blood Donor&quot;, Hepatits = c(&quot;1=Hepatitis&quot;, &quot;2=Fibrosis&quot;, &quot;3=Cirrhosis&quot;)) ###&quot;Suspect_Blood_Donor&quot; SWITCH WITH &quot;Hepatitis&quot;
 unique(cleanDF_random$Category) # get the unique Labels</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-output-begin eyJkYXRhIjoiWzFdIEhlcGF0aXRzICAgICAgICAgICAgICBCbG9vZF9Eb25vciAgICAgICAgICAgU3VzcGVjdGVkX0Jsb29kX0Rvbm9yXG5MZXZlbHM6IEJsb29kX0Rvbm9yIFN1c3BlY3RlZF9CbG9vZF9Eb25vciBIZXBhdGl0c1xuIn0= -->
