@@ -31,8 +31,8 @@ As such, it is very important to screen blood donors.
 path <- "KNN-hcvdat0.csv"
 rawDF <- read_csv(path)
 
-str(rawDF)    # See columns and meta data (14 cols, 615 rows)     SWITCH DESCRIPTIONS
-head(rawDF)   # See first couple of rows
+  str(rawDF)    # See columns and meta data (14 cols, 615 rows)     SWITCHED AROUND COMMENTS
+  head(rawDF)   # See first couple of rows                          LINE 34 and 35
 
 (cntCat <- table(rawDF$Category))
 (percCat <- round(prop.table(cntCat) * 100, digits=1))
@@ -81,7 +81,7 @@ Hepatits                | 1=Hepatits    2=Fibrosis  3=Cirrhosis
 
 
 ```{r}
-cleanDF_random$Category <- fct_collapse(cleanDF_random$Category, Blood_Donor = "0=Blood Donor", Suspected_Blood_Donor = "0s=suspect Blood Donor", Hepatits = c("1=Hepatitis", "2=Fibrosis", "3=Cirrhosis")) ###"Suspect_Blood_Donor" SWITCH WITH "Hepatitis"
+cleanDF_random$Category <- fct_collapse(cleanDF_random$Category, Blood_Donor = "0=Blood Donor", Suspected_Blood_Donor = "0s=suspect Blood Donor", Hepatits = c("1=Hepatitis", "2=Fibrosis", "3=Cirrhosis")) ### SWITCHED"Suspect_Blood_Donor" WITH "Hepatitis"
 unique(cleanDF_random$Category) # get the unique Labels
 ```
 
